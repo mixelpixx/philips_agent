@@ -32,14 +32,18 @@ Before you can use the backend services from your Flutter web app, you need to s
 ## Open a Terminal or Command Prompt: Navigate to the /backend directory of your project.
 
 Activate the Python Environment: If you're using a virtual environment (which is recommended), activate it. If you're using Poetry (as indicated by your pyproject.toml), you can activate the environment with:
+ ```bash
   ## poetry shell
-  
+ ```
+ 
 Install Dependencies: Still within the /backend directory, install the required Python dependencies. If you're using Poetry, you can do this with:
+```bash
   ## poetry install
-  
+```
 Start the FastAPI Server: You can start the server with the command provided in your README.md. Since you're likely in a development environment, you can use:
+```bash   
   ## uvicorn main:app --reload
-  
+```  
 This command starts the FastAPI server on localhost with port 8000 and enables hot reloading.
 
 # 2. Serve the Flutter Web App
@@ -48,8 +52,9 @@ To view your Flutter web app, you'll need to build and serve it. Flutter provide
 Open a New Terminal or Command Prompt Window: Navigate to the root directory of your Flutter project.
 Ensure Flutter is in Your PATH: Make sure you can run the flutter command. If not, you may need to add Flutter to your system's PATH.
 Run the Flutter Web App: Use the following Flutter command to run your web app:
+```bash  
   ## flutter run -d chrome
-  
+```  
 This command builds your Flutter app for the web and launches it in Chrome. If you prefer, you can replace chrome with another supported browser, or omit -d chrome to use the default browser.
 
 ## 3. Testing the Integration
