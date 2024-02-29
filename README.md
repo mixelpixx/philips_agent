@@ -1,6 +1,6 @@
 [![flutter_sample](https://github.com/google/generative-ai-dart/actions/workflows/flutter_sample.yml/badge.svg)](https://github.com/google/generative-ai-dart/actions/workflows/flutter_sample.yml)
 
-# Flutter generative AI sample
+# Flutter generative AI + Openai RAG backend
 
 A Flutter chat application that uses the `google_generative_ai` package.
 
@@ -30,12 +30,16 @@ To test your Flutter web app along with the Python FastAPI backend, you'll need 
 Before you can use the backend services from your Flutter web app, you need to start the FastAPI server. Here's how to do it:
 
 Open a Terminal or Command Prompt: Navigate to the /backend directory of your project.
+
 Activate the Python Environment: If you're using a virtual environment (which is recommended), activate it. If you're using Poetry (as indicated by your pyproject.toml), you can activate the environment with:
   poetry shell
+  
 Install Dependencies: Still within the /backend directory, install the required Python dependencies. If you're using Poetry, you can do this with:
   poetry install
+  
 Start the FastAPI Server: You can start the server with the command provided in your README.md. Since you're likely in a development environment, you can use:
   uvicorn main:app --reload
+  
 This command starts the FastAPI server on localhost with port 8000 and enables hot reloading.
 
 2. Serve the Flutter Web App
@@ -45,6 +49,7 @@ Open a New Terminal or Command Prompt Window: Navigate to the root directory of 
 Ensure Flutter is in Your PATH: Make sure you can run the flutter command. If not, you may need to add Flutter to your system's PATH.
 Run the Flutter Web App: Use the following Flutter command to run your web app:
   flutter run -d chrome
+  
 This command builds your Flutter app for the web and launches it in Chrome. If you prefer, you can replace chrome with another supported browser, or omit -d chrome to use the default browser.
 
 3. Testing the Integration
@@ -53,4 +58,5 @@ Once both the backend and the Flutter web app are running, you can test the inte
 Additional Notes
 Environment Variables: Your Python backend uses environment variables (e.g., OPENAI_API_KEY). Make sure these are set in your environment or in a .env file in the /backend directory.
 CORS (Cross-Origin Resource Sharing): Your backend is configured to allow CORS for all origins in development mode. This is necessary for your Flutter web app to communicate with the backend during development. Ensure the environment variable ENVIRONMENT is set to dev to enable this setting.
+
 By following these steps, you should be able to test your Flutter web app with the FastAPI backend successfully.
