@@ -12,17 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const GenerativeAISample());
 }
 
 class GenerativeAISample extends StatelessWidget {
-  const GenerativeAISample({super.key});
+  const GenerativeAISample({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +44,7 @@ class GenerativeAISample extends StatelessWidget {
 }
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key, required this.title});
+  const ChatScreen({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -62,7 +65,7 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class ChatWidget extends StatefulWidget {
-  const ChatWidget({super.key});
+  const ChatWidget({Key? key}) : super(key: key);
 
   @override
   State<ChatWidget> createState() => _ChatWidgetState();
@@ -79,6 +82,7 @@ class _ChatWidgetState extends State<ChatWidget> {
       <({Image? image, String? text, bool fromUser})>[];
   bool _loading = false;
   static const _apiKey = String.fromEnvironment('API_KEY');
+  final String _backendUrl = 'http://your-backend-url/api/chat'; // Replace with your actual backend URL
 
   @override
   void initState() {
@@ -95,7 +99,7 @@ class _ChatWidgetState extends State<ChatWidget> {
   }
 
   void _scrollDown() {
-    WidgetsBinding.instance.addPostFrameCallback(
+    WidgetsBinding.instance!.addPostFrameCallback(
       (_) => _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
         duration: const Duration(
@@ -227,12 +231,12 @@ class _ChatWidgetState extends State<ChatWidget> {
       _generatedContent.add((
         image: Image.asset("assets/images/cat.jpg"),
         text: message,
-        fromUser: true
+        fromUser: true,
       ));
       _generatedContent.add((
         image: Image.asset("assets/images/scones.jpg"),
         text: null,
-        fromUser: true
+        fromUser: true,
       ));
 
       var response = await _visionModel.generateContent(content);
@@ -266,6 +270,33 @@ class _ChatWidgetState extends State<ChatWidget> {
     setState(() {
       _loading = true;
     });
+
+    // Send the original message to the backend for reformulation
+    try {
+      final response = await http.post(
+        Uri.parse(_backendUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'messages': [
+            {'role': 'user', 'content': message},
+          ],
+        }),
+      );
+      if (response.statusCode == 200) {
+        // Use the reformulated message from the backend
+        message = jsonDecode(response.body)['reformulated_message'];
+      } else {
+        throw Exception('Failed to reformulate message');
+      }
+    } catch (e) {
+      _showError(e.toString());
+      setState(() {
+        _loading = false;
+      });
+      return;
+    }
 
     try {
       _generatedContent.add((image: null, text: message, fromUser: true));
@@ -327,11 +358,11 @@ class MessageWidget extends StatelessWidget {
   final bool isFromUser;
 
   const MessageWidget({
-    super.key,
+    Key? key,
     this.image,
     this.text,
     required this.isFromUser,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -354,8 +385,8 @@ class MessageWidget extends StatelessWidget {
                 ),
                 margin: const EdgeInsets.only(bottom: 8),
                 child: Column(children: [
-                  if (text case final text?) MarkdownBody(data: text),
-                  if (image case final image?) image,
+                  if (text != null) MarkdownBody(data: text!),
+                  if (image != null) image!,
                 ]))),
       ],
     );

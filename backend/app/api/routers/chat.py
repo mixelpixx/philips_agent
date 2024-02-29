@@ -2,6 +2,7 @@ from typing import List
 from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 from fastapi import APIRouter, Depends, HTTPException, Request, status
+from your_rag_implementation import reformulate_query
 from llama_index.core.chat_engine.types import BaseChatEngine
 from llama_index.core.llms import ChatMessage, MessageRole
 from app.engine import get_chat_engine
@@ -48,12 +49,8 @@ async def chat(
     # query chat engine
     response = await chat_engine.astream_chat(lastMessage.content, messages)
 
-    # stream response
-    async def event_generator():
-        async for token in response.async_response_gen():
-            # If client closes connection, stop sending events
-            if await request.is_disconnected():
-                break
-            yield token
+    # Reformulate the last user message using RAG
+    reformulated_message = reformulate_query(lastMessage.content)
 
-    return StreamingResponse(event_generator(), media_type="text/plain")
+    # Return the reformulated message instead of streaming response
+    return {"reformulated_message": reformulated_message}
